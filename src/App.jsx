@@ -4,6 +4,7 @@ import './App.css'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import Dashboard from './pages/Dashboard'
+import ProtectedRoute from "./components/ProtectedRoute"
 
 function App() {
 
@@ -12,10 +13,19 @@ function App() {
       <Routes>
           <Route path="/" element={<Login/>}/>
           <Route path="/register" element={<Register/>}/>
-          <Route path="/dashboard" element={<Dashboard/>} />
+          <Route
+           path="/dashboard" 
+           element={
+           <ProtectedRoute>
+           <Dashboard/>
+          </ProtectedRoute>
+          }
+           />
+
       </Routes>
+
     </BrowserRouter>
-  )
+  );
 }
 
-export default App
+export default App;
