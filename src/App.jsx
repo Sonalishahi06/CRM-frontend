@@ -6,6 +6,7 @@ import Register from './pages/Register'
 import Dashboard from './pages/Dashboard'
 import ProtectedRoute from "./components/ProtectedRoute"
 
+
 function App() {
 
   return (
@@ -21,7 +22,7 @@ function App() {
           </ProtectedRoute>
           }
            />
-
+          
       </Routes>
 
     </BrowserRouter>

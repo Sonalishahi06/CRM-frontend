@@ -1,6 +1,7 @@
 import React ,{useState}from 'react'
 import {Link,useNavigate} from "react-router-dom"
 import api from '../services/api';
+import axios from "axios";
 
 const Register = () => {
     
@@ -23,22 +24,19 @@ const Register = () => {
     return;
       }
 
-      try{
-        await api.post("/auth/register",{
-          name,
-          email,
-          password
-        });
-        alert("Registration Successful");
-        navigate("/");
-      }
-      catch(error){
-    console.log("Full Error:", error);
+     try {
+    await axios.post("http://localhost:8080/api/auth/register", {
+        name,
+        email,
+        password
+    });
 
-    if(error.response){
-        console.log("Response Data:", error.response.data);
-        console.log("Status:", error.response.status);
-    }
+    alert("Registration Successful");
+    navigate("/");
+} catch (error) {
+    console.log("Full Error:", error);
+    console.log("Response:", error.response?.data);
+    console.log("Status:", error.response?.status);
 
     alert("Registration failed");
 }
