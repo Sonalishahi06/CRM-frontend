@@ -5,7 +5,7 @@ import Login from './pages/Login'
 import Register from './pages/Register'
 import Dashboard from './pages/Dashboard'
 import ProtectedRoute from "./components/ProtectedRoute"
-
+import Customer from "./pages/Customer";
 
 function App() {
 
@@ -22,6 +22,7 @@ function App() {
           </ProtectedRoute>
           }
            />
+          <Route path="/customers"element={<Customer />}/>
           
       </Routes>
 
