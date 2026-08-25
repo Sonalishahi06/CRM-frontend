@@ -9,6 +9,7 @@ const Dashboard = () => {
   const [customerCount, setCustomerCount] = useState(0);
   const [leadCount, setLeadCount] = useState(0);
   const [taskCount, setTaskCount] = useState(0);
+  const name = localStorage.getItem("name");
 
   useEffect(() => {
     fetchDashboardData();
@@ -36,6 +37,7 @@ const Dashboard = () => {
 
   const handleLogout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("name");
     navigate("/");
   };
 
@@ -58,7 +60,7 @@ const Dashboard = () => {
       <div className="p-8">
 
         <h2 className="text-3xl font-bold mb-6">
-          Welcome to CRM 👋
+          Welcome, {name} 👋
         </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

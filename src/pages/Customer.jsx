@@ -2,9 +2,7 @@ import React, { useEffect, useState } from "react";
 import api from '../services/api';
 
 const Customer = () => {
-  // =========================
-  // STATES
-  // =========================
+ 
 
   const [customers, setCustomers] = useState([]);
 
@@ -17,6 +15,7 @@ const Customer = () => {
 
   // Edit ke time customer store hoga
   const [editingCustomer, setEditingCustomer] = useState(null);
+  const name = localStorage.getItem("name");
 
   // Form data
   const [formData, setFormData] = useState({
@@ -42,35 +41,37 @@ const Customer = () => {
   const [totalElements, setTotalElements] = useState(0);
 
 
-  // =========================
-  // GET ALL CUSTOMERS
-  // =========================
+  // GET ALL CUSTOMERS 
+
 
   const getCustomers = async () => {
-    try {
-      setLoading(true);
-      setError("");
+  try {
+    setLoading(true);
+    setError("");
 
-      const response = await api.get(
-        `/customers?page=${page}&size=${size}`
-      );
+    const response = await api.get(
+      `/customers?page=${page}&size=${size}`
+    );
 
-      setCustomers(response.data.content);
+    console.log("CUSTOMER RESPONSE:", response);
+    console.log("CUSTOMER DATA:", response.data);
 
-      setTotalPages(response.data.totalPages);
+    setCustomers(response.data.content);
+    setTotalPages(response.data.totalPages);
+    setTotalElements(response.data.totalElements);
 
-      setTotalElements(response.data.totalElements);
+  } catch (error) {
+    console.log("CUSTOMER ERROR:", error);
+    console.log("STATUS:", error.response?.status);
+    console.log("URL:", error.config?.url);
+    console.log("RESPONSE:", error.response?.data);
 
-    } catch (error) {
-      console.log(error);
+    setError("Unable to load customers.");
 
-      setError("Unable to load customers.");
-
-    } finally {
-      setLoading(false);
-    }
-  };
-
+  } finally {
+    setLoading(false);
+  }
+};
 
   // =========================
   // USE EFFECT
@@ -352,11 +353,11 @@ const Customer = () => {
         <div className="flex items-center gap-3">
 
           <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center font-bold text-blue-600">
-            S
+           {name?.charAt(0).toUpperCase()}
           </div>
 
           <span className="font-medium text-gray-700">
-            Sonali
+           {name}
           </span>
 
         </div>

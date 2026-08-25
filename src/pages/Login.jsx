@@ -21,9 +21,10 @@ const Login = () => {
       })
       console.log("Login Response:", response.data)
 
-       localStorage.setItem("token", response.data)
+       localStorage.setItem("token", response.data.token)
+       localStorage.setItem("name",response.data.name)
        console.log("Saved Token:", localStorage.getItem("token"));
-
+       console.log("Name:", localStorage.getItem("name"))
       // alert("Login Successful")
 
       navigate("/dashboard")
