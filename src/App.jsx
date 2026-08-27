@@ -6,6 +6,7 @@ import Register from './pages/Register'
 import Dashboard from './pages/Dashboard'
 import ProtectedRoute from "./components/ProtectedRoute"
 import Customer from "./pages/Customer";
+import Lead from "./pages/Lead";
 
 function App() {
 
@@ -23,7 +24,7 @@ function App() {
           }
            />
           <Route path="/customers"element={<Customer />}/>
-          
+          <Route path="/leads" element={<Lead/>}/>
       </Routes>
 
     </BrowserRouter>

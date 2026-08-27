@@ -23,8 +23,10 @@ const Login = () => {
 
        localStorage.setItem("token", response.data.token)
        localStorage.setItem("name",response.data.name)
+       localStorage.setItem("role",response.data.role)
        console.log("Saved Token:", localStorage.getItem("token"));
        console.log("Name:", localStorage.getItem("name"))
+       console.log("role:",localStorage.getItem("role"))
       // alert("Login Successful")
 
       navigate("/dashboard")
