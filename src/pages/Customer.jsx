@@ -1,23 +1,17 @@
+
 import React, { useEffect, useState } from "react";
-import api from '../services/api';
+import api from "../services/api";
 
 const Customer = () => {
- 
-
   const [customers, setCustomers] = useState([]);
-
   const [loading, setLoading] = useState(false);
-
   const [error, setError] = useState("");
 
-  // Modal open/close
   const [showModal, setShowModal] = useState(false);
-
-  // Edit ke time customer store hoga
   const [editingCustomer, setEditingCustomer] = useState(null);
+
   const name = localStorage.getItem("name");
 
-  // Form data
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -26,64 +20,45 @@ const Customer = () => {
     status: "ACTIVE",
   });
 
-  // Search
   const [search, setSearch] = useState("");
-
-  // Filter
   const [statusFilter, setStatusFilter] = useState("ALL");
 
-  // Pagination
   const [page, setPage] = useState(0);
   const [size] = useState(5);
 
   const [totalPages, setTotalPages] = useState(0);
-
   const [totalElements, setTotalElements] = useState(0);
 
-
-  // GET ALL CUSTOMERS 
-
+  // =========================
+  // GET CUSTOMERS
+  // =========================
 
   const getCustomers = async () => {
-  try {
-    setLoading(true);
-    setError("");
+    try {
+      setLoading(true);
+      setError("");
 
-    const response = await api.get(
-      `/customers?page=${page}&size=${size}`
-    );
+      const response = await api.get(
+        `/customers?page=${page}&size=${size}`
+      );
 
-    console.log("CUSTOMER RESPONSE:", response);
-    console.log("CUSTOMER DATA:", response.data);
-
-    setCustomers(response.data.content);
-    setTotalPages(response.data.totalPages);
-    setTotalElements(response.data.totalElements);
-
-  } catch (error) {
-    console.log("CUSTOMER ERROR:", error);
-    console.log("STATUS:", error.response?.status);
-    console.log("URL:", error.config?.url);
-    console.log("RESPONSE:", error.response?.data);
-
-    setError("Unable to load customers.");
-
-  } finally {
-    setLoading(false);
-  }
-};
-
-  // =========================
-  // USE EFFECT
-  // =========================
+      setCustomers(response.data.content);
+      setTotalPages(response.data.totalPages);
+      setTotalElements(response.data.totalElements);
+    } catch (error) {
+      console.log("CUSTOMER ERROR:", error);
+      setError("Unable to load customers.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     getCustomers();
   }, [page]);
 
-
   // =========================
-  // FORM INPUT CHANGE
+  // FORM CHANGE
   // =========================
 
   const handleChange = (e) => {
@@ -95,13 +70,11 @@ const Customer = () => {
     });
   };
 
-
   // =========================
-  // OPEN ADD CUSTOMER MODAL
+  // ADD MODAL
   // =========================
 
   const openAddModal = () => {
-
     setEditingCustomer(null);
 
     setFormData({
@@ -115,13 +88,11 @@ const Customer = () => {
     setShowModal(true);
   };
 
-
   // =========================
-  // OPEN EDIT MODAL
+  // EDIT MODAL
   // =========================
 
   const openEditModal = (customer) => {
-
     setEditingCustomer(customer);
 
     setFormData({
@@ -135,48 +106,29 @@ const Customer = () => {
     setShowModal(true);
   };
 
-
   // =========================
-  // ADD / UPDATE CUSTOMER
+  // ADD / UPDATE
   // =========================
 
   const handleSubmit = async (e) => {
-
     e.preventDefault();
 
     try {
-
       setLoading(true);
-
       setError("");
 
       if (editingCustomer) {
-
-        // UPDATE
-
         await api.put(
           `/customers/${editingCustomer.id}`,
           formData
         );
-
       } else {
-
-        // ADD
-
-        await api.post(
-          "/customers",
-          formData
-        );
-
+        await api.post("/customers", formData);
       }
 
-      // Close modal
       setShowModal(false);
-
-      // Reset editing
       setEditingCustomer(null);
 
-      // Reset form
       setFormData({
         name: "",
         email: "",
@@ -185,78 +137,53 @@ const Customer = () => {
         status: "ACTIVE",
       });
 
-      // Refresh customer list
       getCustomers();
-
     } catch (error) {
-
       console.log(error);
-
       setError("Unable to save customer.");
-
     } finally {
-
       setLoading(false);
-
     }
   };
 
-
   // =========================
-  // DELETE CUSTOMER
+  // DELETE
   // =========================
 
   const deleteCustomer = async (id) => {
-
     const confirmDelete = window.confirm(
       "Are you sure you want to delete this customer?"
     );
 
-    if (!confirmDelete) {
-      return;
-    }
+    if (!confirmDelete) return;
 
     try {
-
       setLoading(true);
 
-      await api.delete(
-        `/customers/${id}`
-      );
+      await api.delete(`/customers/${id}`);
 
       getCustomers();
-
     } catch (error) {
-
       console.log(error);
-
       setError("Unable to delete customer.");
-
     } finally {
-
       setLoading(false);
-
     }
   };
 
-
   // =========================
-  // SEARCH CUSTOMER
+  // SEARCH
   // =========================
 
   const searchCustomer = async (value) => {
-
     setSearch(value);
 
     if (value.trim() === "") {
-
       getCustomers();
-
       return;
     }
 
     try {
-
       setLoading(true);
 
       const response = await api.get(
@@ -264,42 +191,29 @@ const Customer = () => {
       );
 
       setCustomers(response.data);
-
       setTotalElements(response.data.length);
-
       setTotalPages(1);
-
     } catch (error) {
-
       console.log(error);
-
       setError("Unable to search customers.");
-
     } finally {
-
       setLoading(false);
-
     }
   };
 
-
   // =========================
-  // FILTER CUSTOMER
+  // FILTER
   // =========================
 
   const filterCustomer = async (status) => {
-
     setStatusFilter(status);
 
     if (status === "ALL") {
-
       getCustomers();
-
       return;
     }
 
     try {
-
       setLoading(true);
 
       const response = await api.get(
@@ -307,94 +221,154 @@ const Customer = () => {
       );
 
       setCustomers(response.data);
-
       setTotalElements(response.data.length);
-
       setTotalPages(1);
-
     } catch (error) {
-
       console.log(error);
-
       setError("Unable to filter customers.");
-
     } finally {
-
       setLoading(false);
-
     }
   };
 
-
   // =========================
-  // JSX
+  // UI
   // =========================
 
   return (
-
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-slate-50">
 
       {/* ================= HEADER ================= */}
 
-      <div className="bg-white shadow-sm px-8 py-4 flex justify-between items-center">
+      <header className="bg-slate-950 text-white px-6 md:px-10 py-4">
+        <div className="max-w-7xl mx-auto flex justify-between items-center">
 
-        <div>
+          <div className="flex items-center gap-3">
 
-          <h1 className="text-2xl font-bold text-gray-800">
-            Smart CRM
-          </h1>
+            <div className="w-11 h-11 rounded-xl bg-linear-to-br from-blue-500 to-indigo-600 flex items-center justify-center font-bold text-xl shadow-lg">
+              C
+            </div>
 
-          <p className="text-sm text-gray-500">
-            Customer Management
-          </p>
+            <div>
+              <h1 className="text-lg font-bold">
+                Smart CRM
+              </h1>
 
-        </div>
+              <p className="text-xs text-slate-400">
+                Customer Management
+              </p>
+            </div>
 
-        <div className="flex items-center gap-3">
-
-          <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center font-bold text-blue-600">
-           {name?.charAt(0).toUpperCase()}
           </div>
 
-          <span className="font-medium text-gray-700">
-           {name}
-          </span>
+          <div className="flex items-center gap-3">
+
+            <div className="hidden sm:block text-right">
+              <p className="text-sm font-semibold">
+                {name}
+              </p>
+
+              <p className="text-xs text-slate-400">
+                CRM User
+              </p>
+            </div>
+
+            <div className="w-10 h-10 rounded-full bg-linear-to-br from-blue-500 to-indigo-600 flex items-center justify-center font-bold">
+              {name?.charAt(0).toUpperCase()}
+            </div>
+
+          </div>
 
         </div>
-
-      </div>
+      </header>
 
 
       {/* ================= MAIN ================= */}
 
-      <div className="p-8">
+      <main className="max-w-7xl mx-auto px-4 md:px-8 py-8">
 
+        {/* PAGE TITLE */}
 
-        {/* ================= TITLE ================= */}
-
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-5 mb-8">
 
           <div>
+            <p className="text-sm font-medium text-blue-600 mb-1">
+              CUSTOMER MANAGEMENT
+            </p>
 
-            <h2 className="text-3xl font-bold text-gray-800">
+            <h2 className="text-3xl md:text-4xl font-bold text-slate-900">
               Customers
             </h2>
 
-            <p className="text-gray-500 mt-1">
-              Manage all your customers
+            <p className="text-slate-500 mt-2">
+              Manage and track all your customer information.
             </p>
-
           </div>
-
-
-          {/* ADD BUTTON */}
 
           <button
             onClick={openAddModal}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-lg font-medium"
+            className="bg-linear-to-r from-blue-600 to-indigo-600
+            hover:from-blue-700 hover:to-indigo-700
+            text-white px-6 py-3 rounded-xl font-semibold
+            shadow-lg hover:shadow-xl transition-all
+            flex items-center justify-center gap-2"
           >
-            + Add Customer
+            <span className="text-xl">+</span>
+            Add Customer
           </button>
+
+        </div>
+
+
+        {/* ================= STATS ================= */}
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-7">
+
+          <div className="bg-white rounded-2xl p-5 shadow-sm border border-slate-100">
+            <p className="text-sm text-slate-500">
+              Total Customers
+            </p>
+
+            <h3 className="text-3xl font-bold text-slate-900 mt-1">
+              {totalElements}
+            </h3>
+
+            <p className="text-xs text-blue-600 mt-2">
+              All registered customers
+            </p>
+          </div>
+
+
+          <div className="bg-white rounded-2xl p-5 shadow-sm border border-slate-100">
+            <p className="text-sm text-slate-500">
+              Active Customers
+            </p>
+
+            <h3 className="text-3xl font-bold text-green-600 mt-1">
+              {customers.filter(
+                (customer) => customer.status === "ACTIVE"
+              ).length}
+            </h3>
+
+            <p className="text-xs text-green-600 mt-2">
+              Currently active
+            </p>
+          </div>
+
+
+          <div className="bg-white rounded-2xl p-5 shadow-sm border border-slate-100">
+            <p className="text-sm text-slate-500">
+              Current Page
+            </p>
+
+            <h3 className="text-3xl font-bold text-indigo-600 mt-1">
+              {page + 1}
+            </h3>
+
+            <p className="text-xs text-slate-500 mt-2">
+              Of {totalPages || 1} pages
+            </p>
+          </div>
 
         </div>
 
@@ -402,44 +376,50 @@ const Customer = () => {
         {/* ================= ERROR ================= */}
 
         {error && (
-
-          <div className="bg-red-100 text-red-700 px-4 py-3 rounded-lg mb-5">
-
+          <div className="mb-5 bg-red-50 border border-red-200 text-red-700 px-5 py-3 rounded-xl">
             {error}
-
           </div>
-
         )}
 
 
-        {/* ================= SEARCH & FILTER ================= */}
+        {/* ================= SEARCH ================= */}
 
-        <div className="bg-white p-5 rounded-xl shadow-sm mb-6">
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-5 mb-6">
 
-          <div className="flex gap-4">
+          <div className="flex flex-col md:flex-row gap-4">
 
+            <div className="relative flex-1">
 
-            {/* SEARCH */}
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
+                🔍
+              </span>
 
-            <input
-              type="text"
-              placeholder="Search customer by name..."
-              value={search}
-              onChange={(e) =>
-                searchCustomer(e.target.value)
-              }
-              className="flex-1 border border-gray-300 rounded-lg px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500"
-            />
+              <input
+                type="text"
+                placeholder="Search customer by name..."
+                value={search}
+                onChange={(e) =>
+                  searchCustomer(e.target.value)
+                }
+                className="w-full border border-slate-200 bg-slate-50
+                rounded-xl pl-11 pr-4 py-3
+                focus:bg-white focus:outline-none
+                focus:ring-2 focus:ring-blue-500
+                transition"
+              />
 
+            </div>
 
-            {/* FILTER */}
 
             <select
               value={statusFilter}
               onChange={(e) =>
                 filterCustomer(e.target.value)
               }
-              className="border border-gray-300 rounded-lg px-4 py-3 outline-none"
+              className="md:w-48 border border-slate-200
+              bg-slate-50 rounded-xl px-4 py-3
+              focus:bg-white focus:outline-none
+              focus:ring-2 focus:ring-blue-500"
             >
 
               <option value="ALL">
@@ -461,32 +441,44 @@ const Customer = () => {
         </div>
 
 
-        {/* ================= CUSTOMER TABLE ================= */}
+        {/* ================= TABLE ================= */}
 
-        <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
 
           {loading ? (
 
-            <div className="p-10 text-center text-gray-500">
-              Loading customers...
+            <div className="py-20 text-center">
+
+              <div className="w-10 h-10 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mx-auto mb-4"></div>
+
+              <p className="text-slate-500">
+                Loading customers...
+              </p>
+
             </div>
 
           ) : customers.length === 0 ? (
 
-            <div className="p-10 text-center">
+            <div className="py-20 text-center">
 
-              <div className="text-5xl mb-3">
+              <div className="text-6xl mb-4">
                 👥
               </div>
 
-              <h3 className="text-lg font-semibold text-gray-700">
+              <h3 className="text-xl font-semibold text-slate-800">
                 No Customers Found
               </h3>
 
-              <p className="text-gray-500 mt-1">
-                Add your first customer.
+              <p className="text-slate-500 mt-2">
+                Add your first customer to get started.
               </p>
+
+              <button
+                onClick={openAddModal}
+                className="mt-5 bg-blue-600 text-white px-5 py-2.5 rounded-lg hover:bg-blue-700"
+              >
+                + Add Customer
+              </button>
 
             </div>
 
@@ -496,34 +488,31 @@ const Customer = () => {
 
               <table className="w-full">
 
-
-                {/* TABLE HEADER */}
-
-                <thead className="bg-gray-50 border-b">
+                <thead className="bg-slate-50 border-b border-slate-200">
 
                   <tr>
 
-                    <th className="text-left px-6 py-4 text-sm font-semibold text-gray-600">
+                    <th className="text-left px-6 py-4 text-xs uppercase tracking-wide font-semibold text-slate-500">
                       Customer
                     </th>
 
-                    <th className="text-left px-6 py-4 text-sm font-semibold text-gray-600">
+                    <th className="text-left px-6 py-4 text-xs uppercase tracking-wide font-semibold text-slate-500">
                       Email
                     </th>
 
-                    <th className="text-left px-6 py-4 text-sm font-semibold text-gray-600">
+                    <th className="text-left px-6 py-4 text-xs uppercase tracking-wide font-semibold text-slate-500">
                       Phone
                     </th>
 
-                    <th className="text-left px-6 py-4 text-sm font-semibold text-gray-600">
+                    <th className="text-left px-6 py-4 text-xs uppercase tracking-wide font-semibold text-slate-500">
                       Company
                     </th>
 
-                    <th className="text-left px-6 py-4 text-sm font-semibold text-gray-600">
+                    <th className="text-left px-6 py-4 text-xs uppercase tracking-wide font-semibold text-slate-500">
                       Status
                     </th>
 
-                    <th className="text-right px-6 py-4 text-sm font-semibold text-gray-600">
+                    <th className="text-right px-6 py-4 text-xs uppercase tracking-wide font-semibold text-slate-500">
                       Actions
                     </th>
 
@@ -532,17 +521,14 @@ const Customer = () => {
                 </thead>
 
 
-                {/* TABLE BODY */}
-
-                <tbody>
+                <tbody className="divide-y divide-slate-100">
 
                   {customers.map((customer) => (
 
                     <tr
                       key={customer.id}
-                      className="border-b hover:bg-gray-50"
+                      className="hover:bg-blue-50/40 transition"
                     >
-
 
                       {/* CUSTOMER */}
 
@@ -550,22 +536,20 @@ const Customer = () => {
 
                         <div className="flex items-center gap-3">
 
-                          <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold">
-
+                          <div className="w-11 h-11 rounded-xl bg-linear-to-br from-blue-100 to-indigo-100 text-blue-700 flex items-center justify-center font-bold">
                             {customer.name
                               ?.charAt(0)
                               ?.toUpperCase()}
-
                           </div>
 
                           <div>
 
-                            <p className="font-semibold text-gray-800">
+                            <p className="font-semibold text-slate-800">
                               {customer.name}
                             </p>
 
-                            <p className="text-xs text-gray-400">
-                              ID: #{customer.id}
+                            <p className="text-xs text-slate-400">
+                              ID #{customer.id}
                             </p>
 
                           </div>
@@ -577,21 +561,21 @@ const Customer = () => {
 
                       {/* EMAIL */}
 
-                      <td className="px-6 py-4 text-gray-600">
+                      <td className="px-6 py-4 text-sm text-slate-600">
                         {customer.email}
                       </td>
 
 
                       {/* PHONE */}
 
-                      <td className="px-6 py-4 text-gray-600">
+                      <td className="px-6 py-4 text-sm text-slate-600">
                         {customer.phone || "-"}
                       </td>
 
 
                       {/* COMPANY */}
 
-                      <td className="px-6 py-4 text-gray-600">
+                      <td className="px-6 py-4 text-sm text-slate-600">
                         {customer.company || "-"}
                       </td>
 
@@ -602,14 +586,22 @@ const Customer = () => {
 
                         {customer.status === "ACTIVE" ? (
 
-                          <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-semibold">
+                          <span className="inline-flex items-center gap-1.5 bg-green-50 text-green-700 border border-green-200 px-3 py-1.5 rounded-full text-xs font-semibold">
+
+                            <span className="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
+
                             ACTIVE
+
                           </span>
 
                         ) : (
 
-                          <span className="bg-red-100 text-red-700 px-3 py-1 rounded-full text-xs font-semibold">
+                          <span className="inline-flex items-center gap-1.5 bg-red-50 text-red-700 border border-red-200 px-3 py-1.5 rounded-full text-xs font-semibold">
+
+                            <span className="w-1.5 h-1.5 bg-red-500 rounded-full"></span>
+
                             INACTIVE
+
                           </span>
 
                         )}
@@ -627,7 +619,8 @@ const Customer = () => {
                             onClick={() =>
                               openEditModal(customer)
                             }
-                            className="bg-blue-100 text-blue-600 px-3 py-2 rounded-lg hover:bg-blue-200"
+                            title="Edit Customer"
+                            className="w-9 h-9 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 transition"
                           >
                             ✏️
                           </button>
@@ -636,7 +629,8 @@ const Customer = () => {
                             onClick={() =>
                               deleteCustomer(customer.id)
                             }
-                            className="bg-red-100 text-red-600 px-3 py-2 rounded-lg hover:bg-red-200"
+                            title="Delete Customer"
+                            className="w-9 h-9 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition"
                           >
                             🗑️
                           </button>
@@ -664,14 +658,17 @@ const Customer = () => {
             statusFilter === "ALL" &&
             totalPages > 0 && (
 
-              <div className="flex justify-between items-center px-6 py-4 border-t">
+              <div className="flex flex-col sm:flex-row justify-between items-center gap-4 px-6 py-4 border-t border-slate-100">
 
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-slate-500">
 
-                  Total Customers:{" "}
-
-                  <span className="font-semibold text-gray-700">
-                    {totalElements}
+                  Showing page{" "}
+                  <span className="font-semibold text-slate-700">
+                    {page + 1}
+                  </span>{" "}
+                  of{" "}
+                  <span className="font-semibold text-slate-700">
+                    {totalPages}
                   </span>
 
                 </p>
@@ -684,16 +681,17 @@ const Customer = () => {
                     onClick={() =>
                       setPage(page - 1)
                     }
-                    className="px-4 py-2 border rounded-lg disabled:opacity-40"
+                    className="px-4 py-2 border border-slate-200
+                    rounded-lg text-sm font-medium
+                    hover:bg-slate-50
+                    disabled:opacity-40 disabled:cursor-not-allowed"
                   >
                     ← Previous
                   </button>
 
 
-                  <span className="text-sm text-gray-600">
-
-                    Page {page + 1} of {totalPages}
-
+                  <span className="text-sm font-medium text-slate-600">
+                    {page + 1} / {totalPages}
                   </span>
 
 
@@ -702,10 +700,12 @@ const Customer = () => {
                     onClick={() =>
                       setPage(page + 1)
                     }
-                    className="px-4 py-2 border rounded-lg disabled:opacity-40"
+                    className="px-4 py-2 border border-slate-200
+                    rounded-lg text-sm font-medium
+                    hover:bg-slate-50
+                    disabled:opacity-40 disabled:cursor-not-allowed"
                   >
                     Next →
-
                   </button>
 
                 </div>
@@ -716,37 +716,35 @@ const Customer = () => {
 
         </div>
 
-      </div>
+      </main>
 
 
       {/* ================================================= */}
-      {/* ADD / EDIT CUSTOMER MODAL */}
+      {/* ADD / EDIT MODAL */}
       {/* ================================================= */}
 
       {showModal && (
 
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-sm flex items-center justify-center p-4">
 
-
-          <div className="bg-white rounded-2xl w-full max-w-lg shadow-xl">
-
+          <div className="bg-white rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden">
 
             {/* MODAL HEADER */}
 
-            <div className="px-6 py-5 border-b flex justify-between items-center">
+            <div className="bg-linear-to-r from-blue-600 to-indigo-600 px-6 py-5 text-white flex justify-between items-center">
 
               <div>
 
-                <h2 className="text-xl font-bold text-gray-800">
-
+                <h2 className="text-xl font-bold">
                   {editingCustomer
                     ? "Edit Customer"
                     : "Add Customer"}
-
                 </h2>
 
-                <p className="text-sm text-gray-500">
-                  Enter customer information
+                <p className="text-blue-100 text-sm mt-1">
+                  {editingCustomer
+                    ? "Update customer information"
+                    : "Add a new customer to your CRM"}
                 </p>
 
               </div>
@@ -756,7 +754,7 @@ const Customer = () => {
                 onClick={() =>
                   setShowModal(false)
                 }
-                className="text-gray-500 text-xl"
+                className="w-9 h-9 rounded-lg bg-white/10 hover:bg-white/20 transition text-lg"
               >
                 ✕
               </button>
@@ -768,16 +766,15 @@ const Customer = () => {
 
             <form
               onSubmit={handleSubmit}
-              className="p-6 space-y-4"
+              className="p-6 space-y-5"
             >
-
 
               {/* NAME */}
 
               <div>
 
-                <label className="block text-sm font-medium mb-1">
-                  Name
+                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                  Full Name
                 </label>
 
                 <input
@@ -786,8 +783,11 @@ const Customer = () => {
                   value={formData.name}
                   onChange={handleChange}
                   required
-                  placeholder="Enter name"
-                  className="w-full border rounded-lg px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Enter customer name"
+                  className="w-full border border-slate-200
+                  bg-slate-50 rounded-xl px-4 py-3
+                  focus:bg-white focus:outline-none
+                  focus:ring-2 focus:ring-blue-500"
                 />
 
               </div>
@@ -797,8 +797,8 @@ const Customer = () => {
 
               <div>
 
-                <label className="block text-sm font-medium mb-1">
-                  Email
+                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                  Email Address
                 </label>
 
                 <input
@@ -807,49 +807,62 @@ const Customer = () => {
                   value={formData.email}
                   onChange={handleChange}
                   required
-                  placeholder="Enter email"
-                  className="w-full border rounded-lg px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="customer@example.com"
+                  className="w-full border border-slate-200
+                  bg-slate-50 rounded-xl px-4 py-3
+                  focus:bg-white focus:outline-none
+                  focus:ring-2 focus:ring-blue-500"
                 />
 
               </div>
 
 
-              {/* PHONE */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
-              <div>
+                {/* PHONE */}
 
-                <label className="block text-sm font-medium mb-1">
-                  Phone
-                </label>
+                <div>
 
-                <input
-                  type="text"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  placeholder="Enter phone"
-                  className="w-full border rounded-lg px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500"
-                />
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">
+                    Phone
+                  </label>
 
-              </div>
+                  <input
+                    type="text"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    placeholder="Phone number"
+                    className="w-full border border-slate-200
+                    bg-slate-50 rounded-xl px-4 py-3
+                    focus:bg-white focus:outline-none
+                    focus:ring-2 focus:ring-blue-500"
+                  />
+
+                </div>
 
 
-              {/* COMPANY */}
+                {/* COMPANY */}
 
-              <div>
+                <div>
 
-                <label className="block text-sm font-medium mb-1">
-                  Company
-                </label>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">
+                    Company
+                  </label>
 
-                <input
-                  type="text"
-                  name="company"
-                  value={formData.company}
-                  onChange={handleChange}
-                  placeholder="Enter company"
-                  className="w-full border rounded-lg px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500"
-                />
+                  <input
+                    type="text"
+                    name="company"
+                    value={formData.company}
+                    onChange={handleChange}
+                    placeholder="Company name"
+                    className="w-full border border-slate-200
+                    bg-slate-50 rounded-xl px-4 py-3
+                    focus:bg-white focus:outline-none
+                    focus:ring-2 focus:ring-blue-500"
+                  />
+
+                </div>
 
               </div>
 
@@ -858,7 +871,7 @@ const Customer = () => {
 
               <div>
 
-                <label className="block text-sm font-medium mb-1">
+                <label className="block text-sm font-semibold text-slate-700 mb-2">
                   Status
                 </label>
 
@@ -866,7 +879,10 @@ const Customer = () => {
                   name="status"
                   value={formData.status}
                   onChange={handleChange}
-                  className="w-full border rounded-lg px-4 py-3 outline-none"
+                  className="w-full border border-slate-200
+                  bg-slate-50 rounded-xl px-4 py-3
+                  focus:bg-white focus:outline-none
+                  focus:ring-2 focus:ring-blue-500"
                 >
 
                   <option value="ACTIVE">
@@ -884,14 +900,16 @@ const Customer = () => {
 
               {/* BUTTONS */}
 
-              <div className="flex justify-end gap-3 pt-4">
+              <div className="flex justify-end gap-3 pt-3">
 
                 <button
                   type="button"
                   onClick={() =>
                     setShowModal(false)
                   }
-                  className="px-5 py-3 border rounded-lg"
+                  className="px-5 py-3 border border-slate-200
+                  rounded-xl font-medium text-slate-600
+                  hover:bg-slate-50 transition"
                 >
                   Cancel
                 </button>
@@ -899,13 +917,15 @@ const Customer = () => {
 
                 <button
                   type="submit"
-                  className="px-5 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                  className="px-6 py-3 bg-linear-to-r
+                  from-blue-600 to-indigo-600
+                  text-white rounded-xl font-semibold
+                  hover:from-blue-700 hover:to-indigo-700
+                  shadow-md transition"
                 >
-
                   {editingCustomer
                     ? "Update Customer"
                     : "Add Customer"}
-
                 </button>
 
               </div>
@@ -919,8 +939,8 @@ const Customer = () => {
       )}
 
     </div>
-
   );
 };
 
 export default Customer;
+

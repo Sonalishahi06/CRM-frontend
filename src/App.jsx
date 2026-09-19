@@ -7,6 +7,8 @@ import Dashboard from './pages/Dashboard'
 import ProtectedRoute from "./components/ProtectedRoute"
 import Customer from "./pages/Customer";
 import Lead from "./pages/Lead";
+import Task from "./pages/Tasks";
+import Admin from "./pages/Admin";
 
 function App() {
 
@@ -23,8 +25,40 @@ function App() {
           </ProtectedRoute>
           }
            />
-          <Route path="/customers"element={<Customer />}/>
-          <Route path="/leads" element={<Lead/>}/>
+         <Route
+  path="/customers"
+  element={
+    <ProtectedRoute>
+      <Customer />
+    </ProtectedRoute>
+  }
+/>
+
+<Route
+  path="/leads"
+  element={
+    <ProtectedRoute>
+      <Lead />
+    </ProtectedRoute>
+  }
+/>
+
+<Route
+  path="/tasks"
+  element={
+    <ProtectedRoute>
+      <Task />
+    </ProtectedRoute>
+  }
+/>
+<Route
+  path="/admin"
+  element={
+    <ProtectedRoute>
+      <Admin />
+    </ProtectedRoute>
+  }
+/>
       </Routes>
 
     </BrowserRouter>
